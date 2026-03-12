@@ -3,33 +3,51 @@
 # --- SCRIPT INIT --- #
 
 # Check for sudo
+echo "Checking for escalated privledges..."
 if [ "$EUID" -ne 0 ]; then
   echo "Error: This script requires root privileges. Please run with sudo." >&2
   exit 1  # Exit with error code 1
 fi
+echo "Esclated privledges confirmed, continuing"
+echo ""
+echo "============================================================================"
+echo ""
 
 # --- Update System --- #
+echo "Running system update"
 apt update # update package lists
 apt full-upgrade -y # runs a full system upgrade
-apt autoremove -y # cleans up unused packages
-
+echo "System update complete."
+echo ""
+echo "============================================================================"
+echo ""
 
 # --- Create non-root user --- #
 adminUser="redonline" # specifies the admin's username
+echo "Creating non-root admin user "$adminUser"."
 useradd -m $adminUser # creates the user, -m forces the creation of the user's home directory
-groupadd sshUsers # creates sshUsers group, this will be used later
 usermod -aG sudo $adminUser # adds the user to the sudo group, allowing the user to run sudo commands
 usermod -aG sshUsers $adminUser # adds the user to sshUsers, will be used later
+echo ""
+echo "Please create a password for this user."
 passwd $adminUser #sets the user's password interactively
+echo ""
 chsh -s /bin/bash redonline # changes the default shell to bash
+echo "Disabling root account"
 sed -i '1s|/bin/bash|/sbin/nologin|' /etc/passwd # deactivate root login
 
 touch /home/${adminUser}/.sudo_as_admin_successful # disables sudo prompt
 
-# --- ssh and firewall (ufw) --- #
-mkdir -p /home/${adminUser}/.ssh # creates the .ssh config directory for the admin user
-echo "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIICdS2GAZwoyZtSBicr/wNEpAK7EDLgnI+fc/6/tZTBk" >> /home/${adminUser}/.ssh/authorized_keys # copies my public key to the server
+echo ""
+echo "============================================================================"
+echo ""
 
+
+# --- ssh and firewall (ufw) --- #
+echo "Setting up ssh configuration"
+#mkdir -p /home/${adminUser}/.ssh # creates the .ssh config directory for the admin user
+#echo "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIICdS2GAZwoyZtSBicr/wNEpAK7EDLgnI+fc/6/tZTBk" >> /home/${adminUser}/.ssh/authorized_keys # copies my public key to the server
+#
 # The following creates a file in the ssh config directory.  All files in this directory
 # are included in the main config.  
 # The config changes are commented in the file.
@@ -54,23 +72,77 @@ X11Forwarding no # disables x11 forwarding
 AllowAgentForwarding no # disables agent forwarding
 
 Banner none # disables banner
-DebianBanner none # disables debian's banner
+DebianBanner no # disables debian's banner
 EOF
 
+echo "Restart ssh..."
 systemctl restart ssh # restarts the ssh daemon loading the new configs
+echo "ssh service restarted."
+echo ""
+echo "============================================================================"
+echo ""
 
 # Firewall
-ufw allow OpenSSH
-ufw enable
+echo "Setting up firewall."
+ufw allow OpenSSH # sets ufw to allow OpenSSH ports
+ufw enable # enables the firewall
+echo "Firewall enabled."
+echo ""
+echo "============================================================================"
+echo ""
 
 # --- Time and Date --- #
-timedatectl set-timezone America/Phoenix
+echo "Setting the correct timezone"
+timedatectl set-timezone America/Phoenix # sets server's time zone
+echo ""
+echo "============================================================================"
+echo ""
 
 # --- Fail2Ban --- #
-apt install fail2ban
-systemctl enable --now fail2ban
+echo "Installing Fail2Ban"
+# Using fail2ban to mitigate spam.  also using the default settings, should be fine
+apt install fail2ban -y # installs fail2ban
+echo ""
+echo "Fail2Ban installed, configuring..."
+systemctl enable --now fail2ban # enables fail2ban
+echo "Fail2Ban configured."
+echo ""
+echo "============================================================================"
+echo ""
 
 # --- Automatic Updates --- #
-apt install -y unattended-upgrades
-dpkg-reconfigure --priority=low unattended-upgrades
+echo "Installing unattended-upgrades for automatic system updates"
+apt install unattended-upgrades -y # installs the package
+echo ""
+echo "Fail2Ban installed, configuring..."
+
+# there is an annoying interactive pop-up that asks if you would like to enable automatic updates
+# it takes the default, or prompts if blank.  the config ships with that option blank, thus the prompt.
+# the following command edits the config to yes so that the question is skipped.
+EDITOR='sed -Ei "s|unattended-upgrades/enable_auto_updates=.+|unattended-upgrades/enable_auto_updates=\"yes\"|"' dpkg-reconfigure -f editor unattended-upgrades
+echo "Unattended Upgrades configured."
+echo ""
+echo "============================================================================"
+echo ""
+
+# --- Installing other useful packages --- #
+echo "Installing other utilities..."
+apt install -y \
+	git \
+	curl \
+	neovim \
+	htop \
+echo "Install complete. Cleaning up..."
+
+# --- Clean up --- #
+apt autoremove -y
+apt autoclean
+
+echo "Clean up complete."
+
+# --- Done --- #
+echo "This system is now setup for production."
+echo "Before any other changes are made, it is highly recommended"
+echo "that the system is rebooted. This will NOT be done automatically and"
+echo "is entirely up to the user."
 
