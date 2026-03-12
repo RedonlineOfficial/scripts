@@ -38,6 +38,10 @@ sed -i '1s|/bin/bash|/sbin/nologin|' /etc/passwd # deactivate root login
 
 touch /home/${adminUser}/.sudo_as_admin_successful # disables sudo prompt
 
+echo "Moving ssh keys to new user"
+mkdir -p /home/${adminUser}/.ssh
+cat /root/.ssh/authorized_keys > /home/${adminUser}/.ssh/authorized_keys
+
 echo ""
 echo "============================================================================"
 echo ""
