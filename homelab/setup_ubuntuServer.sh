@@ -132,7 +132,7 @@ apt install -y \
 	git \
 	curl \
 	neovim \
-	htop \
+	htop
 echo "Install complete. Cleaning up..."
 
 # --- Clean up --- #
