@@ -15,8 +15,10 @@ echo ""
 
 # --- Update System --- #
 echo "Running system update"
+echo ""
 apt update # update package lists
 apt full-upgrade -y # runs a full system upgrade
+echo ""
 echo "System update complete."
 echo ""
 echo "============================================================================"
@@ -34,6 +36,7 @@ passwd $adminUser #sets the user's password interactively
 echo ""
 chsh -s /bin/bash redonline # changes the default shell to bash
 echo "Disabling root account"
+echo ""
 sed -i '1s|/bin/bash|/sbin/nologin|' /etc/passwd # deactivate root login
 
 touch /home/${adminUser}/.sudo_as_admin_successful # disables sudo prompt
@@ -49,6 +52,7 @@ echo ""
 
 # --- ssh and firewall (ufw) --- #
 echo "Setting up ssh configuration"
+echo ""
 #mkdir -p /home/${adminUser}/.ssh # creates the .ssh config directory for the admin user
 #echo "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIICdS2GAZwoyZtSBicr/wNEpAK7EDLgnI+fc/6/tZTBk" >> /home/${adminUser}/.ssh/authorized_keys # copies my public key to the server
 #
@@ -75,7 +79,8 @@ X11Forwarding no # disables x11 forwarding
 AllowAgentForwarding no # disables agent forwarding
 EOF
 
-echo "Restart ssh..."
+echo ""
+echo "Restarting ssh..."
 systemctl restart ssh # restarts the ssh daemon loading the new configs
 echo "ssh service restarted."
 echo ""
@@ -84,6 +89,7 @@ echo ""
 
 # Firewall
 echo "Setting up firewall."
+echo ""
 ufw allow OpenSSH # sets ufw to allow OpenSSH ports
 ufw --force enable # enables the firewall
 echo "Firewall enabled."
@@ -92,7 +98,8 @@ echo "==========================================================================
 echo ""
 
 # --- Time and Date --- #
-echo "Setting the correct timezone"
+echo "Setting the local timezone"
+echo ""
 timedatectl set-timezone America/Phoenix # sets server's time zone
 timedatectl
 echo ""
@@ -101,6 +108,7 @@ echo ""
 
 # --- Fail2Ban --- #
 echo "Installing Fail2Ban"
+echo ""
 # Using fail2ban to mitigate spam.  also using the default settings, should be fine
 apt install fail2ban -y # installs fail2ban
 echo ""
@@ -113,6 +121,7 @@ echo ""
 
 # --- Automatic Updates --- #
 echo "Installing unattended-upgrades for automatic system updates"
+echo ""
 apt install unattended-upgrades -y # installs the package
 echo ""
 echo "Fail2Ban installed, configuring..."
@@ -128,12 +137,15 @@ echo ""
 
 # --- Installing other useful packages --- #
 echo "Installing other utilities..."
+echo ""
 apt install -y \
 	git \
 	curl \
 	neovim \
 	htop
+echo ""
 echo "Install complete. Cleaning up..."
+echo ""
 
 # --- Clean up --- #
 apt autoremove -y
@@ -150,4 +162,5 @@ echo "This system is now setup for production."
 echo "Before any other changes are made, it is highly recommended"
 echo "that the system is rebooted. This will NOT be done automatically and"
 echo "is entirely up to the user."
+echo ""
 
