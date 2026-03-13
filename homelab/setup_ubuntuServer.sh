@@ -139,7 +139,11 @@ echo "Install complete. Cleaning up..."
 apt autoremove -y
 apt autoclean
 
+echo ""
 echo "Clean up complete."
+echo ""
+echo "============================================================================"
+echo ""
 
 # --- Done --- #
 echo "This system is now setup for production."
