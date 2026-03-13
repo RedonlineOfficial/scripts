@@ -64,7 +64,6 @@ PasswordAuthentication no # disables password authentication
 PermitEmptyPasswords no # disallows empty password fields
 
 AllowUsers redonline # restricts users that can login via ssh
-#AllowGroups sshUsers # restricts groups that can login via ssh
 
 LoginGraceTime 30 # sets how long the server waits for authentication
 MaxAuthTries 3 # sets how many authentication attempts are allowed
@@ -74,9 +73,6 @@ ClientAliveCountMax 1 # sets how many times the server will check for idle (Clie
 AllowTCPForwarding no # disables tcp forwarding
 X11Forwarding no # disables x11 forwarding
 AllowAgentForwarding no # disables agent forwarding
-
-Banner none # disables banner
-DebianBanner no # disables debian's banner
 EOF
 
 echo "Restart ssh..."
@@ -89,7 +85,7 @@ echo ""
 # Firewall
 echo "Setting up firewall."
 ufw allow OpenSSH # sets ufw to allow OpenSSH ports
-ufw enable # enables the firewall
+ufw --force enable # enables the firewall
 echo "Firewall enabled."
 echo ""
 echo "============================================================================"
@@ -98,6 +94,7 @@ echo ""
 # --- Time and Date --- #
 echo "Setting the correct timezone"
 timedatectl set-timezone America/Phoenix # sets server's time zone
+timedatectl
 echo ""
 echo "============================================================================"
 echo ""
