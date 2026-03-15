@@ -98,7 +98,7 @@ ufw allow ssh
 ufw allow http
 ufw allow https
 echo "Enabling UFW"
-ufw enable -f
+ufw --force enable
 
 ## ssh hardening
 echo "Configuring SSH"
@@ -146,12 +146,12 @@ apt autoclean
 echo "Ubuntu server setup is complete"
 while true; do
    read -p "Would you like to reboot now? (Y|n): " rebootAnswer
-   rebootAnswer=${answer:-y}
+   rebootAnswer=${rebootAnswer:-y}
    
-   if [[ $answer == [Yy] ]]; then
+   if [[ $rebootAnswer == [Yy] ]]; then
       echo "The system will reboot now."
       break
-   elif [[ $answer == [Nn] ]]; then
+   elif [[ $rebootAnswer == [Nn] ]]; then
       echo "It is highly recommended that the system is rebooted. Exiting..."
       exit 0
    else
