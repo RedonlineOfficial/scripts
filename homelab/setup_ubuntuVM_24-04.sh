@@ -28,7 +28,7 @@ fi
 echo "System successfully updated"
 
 ### package installation
-corePackages=( "unattended-upgrades" "fail2ban" "ufw" "curl" "openssh" )
+corePackages=( "unattended-upgrades" "fail2ban" "ufw" "curl" "openssh-server" "openssh-client" )
 extraPackages=( "neovim" "git" )
 
 updatePackageIndex
