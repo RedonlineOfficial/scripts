@@ -1,5 +1,12 @@
 #!/bin/bash
 
+### script init
+# check for sudo privileges
+if [ "$EUID" -ne 0 ]; then
+  echo "Error: This script requires root privileges. Please run with sudo." >&2
+  exit 1  # Exit with error code 1
+fi
+
 ### update/upgrade
 # update package lists
 function updatePackageIndex() {
