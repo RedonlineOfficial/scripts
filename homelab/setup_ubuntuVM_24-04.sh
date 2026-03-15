@@ -35,12 +35,12 @@ updatePackageIndex
 
 echo "Installing core packages"
 for pkg in "${corePackages[@]}"; do
-   apt install -y "$package"
+   apt install -y "$pkg"
 done
 
 echo "Installing extra packages"
 for pkg in "${extraPackages[@]}"; do
-   apt install -y "$package"
+   apt install -y "$pkg"
 done
 
 echo "All packages installed"
