@@ -41,8 +41,7 @@ echo "All packages installed"
 
 ### automatic upgrades
 echo "Setting up unattended upgrades"
-EDITOR='sed -Ei "s|unattended-upgrades/enable_auto_updates=.+|unattended-upgrades/enable_auto_updates=\"yes\"|"' 
-dpkg-reconfigure -f editor unattended-upgrades # this sets it non-interactively
+EDITOR='sed -Ei "s|unattended-upgrades/enable_auto_updates=.+|unattended-upgrades/enable_auto_updates=\"yes\"|"' dpkg-reconfigure -f editor unattended-upgrades # this sets it non-interactively
 echo "Unattended upgrades configured."
 
 ### configure timedatectl
@@ -99,7 +98,7 @@ ufw allow ssh
 ufw allow http
 ufw allow https
 echo "Enabling UFW"
-ufw enable
+ufw enable -f
 
 ## ssh hardening
 echo "Configuring SSH"
@@ -118,7 +117,7 @@ mkdir -p /etc/ssh/sshd_config.d/
 touch /etc/ssh/sshd_config.d/security.conf
 
 cat >/etc/ssh/sshd_config.d/security.conf <<EOF
-AuthenticationMethods pubkey,password
+AuthenticationMethods publickey,password
 Banner none
 ClientAliveCountMax 2
 ClientAliveInterval 300
